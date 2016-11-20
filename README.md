@@ -11,7 +11,7 @@
 
 #### 使用Gradle构建时添加一下依赖即可:
 ```javascript
-compile 'org.xutils:xutils:3.3.20'
+compile 'org.xutils:xutils:3.3.38'
 ```
 ##### 如果使用eclipse可以 [点击这里下载aar文件](http://dl.bintray.com/wyouflf/maven/org/xutils/xutils/), 然后用zip解压, 取出jar包和so文件.
 ##### 混淆配置参考示例项目sample的配置
@@ -37,7 +37,7 @@ compile 'org.xutils:xutils:3.3.20'
 public void onCreate() {
     super.onCreate();
     x.Ext.init(this);
-    x.Ext.setDebug(true); // 是否输出debug日志
+    x.Ext.setDebug(BuildConfig.DEBUG); // 是否输出debug日志, 开启debug会影响性能.
     ...
 }
 ```
@@ -205,9 +205,10 @@ Callback.Cancelable cancelable
 
 	@Override
 	public void onSuccess(String result) {
-		// 注意: 如果服务返回304或 onCache 选择了信任缓存, 这里将不会被调用,
-        // 但是 onFinished 总会被调用.
-		this.result = result;
+		// 注意: 如果服务返回304 或 onCache 选择了信任缓存, 这时result为null.
+        if (result != null) {
+		    this.result = result;
+		}
 	}
 
 	@Override
@@ -270,19 +271,11 @@ ____
 * 部分4.x的机型对webp格式的支持仍然有问题, 需要借助webp.
 * webp来自:https://github.com/webmproject/libwebp
 * webpbackport来自:https://github.com/alexey-pelykh/webp-android-backport
-* 其中为webpbackport添加了nativeDecodeFile的实现, 并修复在Android 5.0以上系统存在bug:
-```CPP
-// android_backport_webp.cpp
-// 修改:
-jclassRef = jniEnv->FindClass(...);
-// 为:
-jclass temp = jniEnv->FindClass(...);
-jclassRef = (jclass)jniEnv->NewGlobalRef(temp);
-jniEnv->DeleteLocalRef(temp);
-// 其他jni代码修改见: http://my.oschina.net/u/1171837/blog/533153
-```
+* xUtils在使用webpbackport时为其添加了nativeDecodeFile的实现, 并修复其在Android 5.0及以上系统存在bug:
+jni代码见: https://github.com/wyouflf/webp-android-backport/commits/master
 
 ----
 ### 关于作者
 * Email： <wyouflf@qq.com>, <wyouflf@gmail.com>
-* 有任何建议或者使用中遇到问题都可以给我发邮件, 你也可以加入QQ群：330445659(已满), 275967695, 257323060, 384426013, 176778777, 169852490, 技术交流，idea分享 *_*
+* 有任何建议或者使用中遇到问题都可以给我发邮件, 你也可以加入QQ群：330445659(已满), 275967695, 257323060,
+384426013, 176778777, 169852490, 261053948, 330108003, 技术交流，idea分享 *_*
